@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Add Category - SMART SHOP{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Add New Category</h1>
+    <p>Create a category for your shop products.</p>
+
+    <form method="POST">
+
+        <label>Category Name</label>
+        <input
+            type="text"
+            name="name"
+            placeholder="e.g. Food and Beverages"
+            required
+        >
+
+        <label>Category Description</label>
+        <textarea
+            name="description"
+            placeholder="Enter category description"
+            rows="4"
+        ></textarea>
+
+        <button type="submit" class="primary-btn">
+            Save Category
+        </button>
+
+        <a href="{{ url_for('admin.categories') }}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

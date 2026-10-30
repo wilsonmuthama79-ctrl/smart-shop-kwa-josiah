@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+{% block title %}Manage Products - SMART SHOP{% endblock %}
+
+{% block content %}
+<section class="admin-container">
+
+    <h1>Product Management</h1>
+
+    <a href="{{ url_for('admin.add_product') }}"
+       class="primary-btn">Add New Product</a>
+
+    <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>Retail</th>
+                <th>Wholesale</th>
+                <th>Stock</th>
+            </tr>
+
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>KSh {{ "%.2f"|format(product.retail_price) }}</td>
+                <td>KSh {{ "%.2f"|format(product.wholesale_price) }}</td>
+                <td>{{ product.stock_quantity }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No products available.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <p><a href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a></p>
+
+</section>
+{% endblock %}

@@ -1,0 +1,103 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="tag">WELCOME TO SMART SHOP</span>
+        <h1>Everything You Need,<br>
+            At The Right Price.</h1>
+        <p>
+            Shop smarter with SMART SHOP kwa Josiah.
+            Affordable wholesale and retail shopping.
+        </p>
+        <a href="#products" class="primary-btn">
+            Explore Products
+        </a>
+    </div>
+</section>
+
+<section class="benefits">
+    <div>
+        <h3>Wholesale Prices</h3>
+        <p>Save more when you buy in bulk.</p>
+    </div>
+    <div>
+        <h3>Retail Shopping</h3>
+        <p>Affordable everyday shopping.</p>
+    </div>
+    <div>
+        <h3>Easy Payments</h3>
+        <p>Pay using M-Pesa or cash.</p>
+    </div>
+</section>
+
+<section class="section" id="categories">
+    <h2>Shop By Category</h2>
+
+    <div class="category-list">
+        {% for category in categories %}
+        <div class="category-card">
+            {{ category.name }}
+        </div>
+        {% else %}
+        <p>Our product categories are coming soon.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section" id="products">
+    <div class="section-heading">
+        <div>
+            <h2>Our Products</h2>
+            <p>Discover our latest products and offers.</p>
+        </div>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+
+            {% if product.image %}
+            <img src="{{ url_for('uploaded_product', filename=product.image) }}"
+     alt="{{ product.name }}">
+                 alt="{{ product.name }}">
+            {% else %}
+            <div class="product-placeholder">
+                No Image Available
+            </div>
+            {% endif %}
+
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+
+                <p class="retail-price">
+                    Retail: KSh {{ "%.2f"|format(product.retail_price) }}
+                </p>
+
+                <p class="wholesale-price">
+                    Wholesale: KSh {{ "%.2f"|format(product.wholesale_price) }}
+                </p>
+
+                <p class="stock">
+                    Stock: {{ product.stock_quantity }}
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-products">
+            <h3>No products available yet.</h3>
+            <p>We will be adding products soon. Please check back!</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="contact-section">
+    <h2>Shop With SMART SHOP kwa Josiah</h2>
+    <p>For enquiries and orders, contact us.</p>
+    <p>Phone: 0759079043</p>
+</section>
+
+{% endblock %}

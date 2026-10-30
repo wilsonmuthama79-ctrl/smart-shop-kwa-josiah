@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+{% block title %}Admin Login - SMART SHOP{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h2>SMART SHOP</h2>
+        <p>Administrator Login</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <label>Email Address</label>
+            <input type="email" name="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button type="submit" class="primary-btn">
+                Login to Dashboard
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

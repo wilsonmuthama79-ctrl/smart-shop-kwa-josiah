@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}SMART SHOP kwa Josiah{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .navbar nav a {
+            text-decoration: none;
+        }
+
+        .admin-dropdown {
+            position: relative;
+        }
+
+        .admin-dropdown summary {
+            cursor: pointer;
+            list-style: none;
+            font-weight: bold;
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #e8f5e9;
+            color: #176b35;
+        }
+
+        .admin-dropdown summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .admin-dropdown summary::after {
+            content: " ▼";
+            font-size: 11px;
+        }
+
+        .admin-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            min-width: 210px;
+            background: white;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .admin-menu a {
+            display: block;
+            padding: 11px 16px;
+            color: #333;
+        }
+
+        .admin-menu a:hover {
+            background: #e8f5e9;
+            color: #176b35;
+        }
+
+        .admin-menu .menu-heading {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar nav {
+                gap: 12px;
+            }
+
+            .admin-menu {
+                left: 0;
+                right: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <a href="/" class="logo">
+        SMART SHOP <span>kwa Josiah</span>
+    </a>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/#categories">Categories</a>
+        <a href="/#products">Products</a>
+        <a href="/#products" class="cart-link">Shop Now</a>
+
+        <details class="admin-dropdown">
+            <summary>Admin</summary>
+
+            <div class="admin-menu">
+
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+
+                    <div class="menu-heading">Administration</div>
+
+                    <a href="{{ url_for('admin.dashboard') }}">
+                        Dashboard
+                    </a>
+
+                    <a href="{{ url_for('admin.add_product') }}">
+                        Add New Product
+                    </a>
+
+                    <a href="{{ url_for('admin.products') }}">
+                        Manage Products
+                    </a>
+
+                    <a href="{{ url_for('admin.categories') }}">
+                        Manage Categories
+                    </a>
+
+                    <a href="{{ url_for('admin.add_category') }}">
+                        Add New Category
+                    </a>
+
+                    <hr>
+
+                    <a href="{{ url_for('auth.logout') }}">
+                        Logout
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('auth.login') }}">
+                        Administrator Login
+                    </a>
+
+                {% endif %}
+
+            </div>
+        </details>
+
+    </nav>
+
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <h3>SMART SHOP kwa Josiah</h3>
+    <p>Wholesale and Retail Shopping</p>
+    <p>Phone: 0759079043</p>
+    <p>&copy; 2026 SMART SHOP kwa Josiah. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
