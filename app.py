@@ -1,9 +1,9 @@
 
 import os
+import hmac
 import click
 
 from flask import Flask, render_template, send_from_directory, request, jsonify
-import hmac
 from config import Config
 from models import db, login_manager
 from models.user import User
@@ -13,6 +13,7 @@ from models.payment import Payment
 
 from routes.admin import admin_bp
 from routes.auth import auth_bp
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -56,8 +57,11 @@ def uploaded_product(filename):
         app.config["UPLOAD_FOLDER"],
         filename
     )
+
+
 @app.route("/secure-admin-reset", methods=["POST"])
 def secure_admin_reset():
+
     reset_token = os.getenv("ADMIN_RESET_TOKEN")
     supplied_token = request.headers.get("X-Reset-Token", "")
 
@@ -67,6 +71,7 @@ def secure_admin_reset():
         return jsonify({"error": "Unauthorized"}), 401
 
     data = request.get_json(silent=True) or {}
+
     email = data.get("email", "").strip().lower()
     new_password = data.get("new_password", "")
 
@@ -74,22 +79,45 @@ def secure_admin_reset():
         return jsonify({"error": "Invalid administrator email"}), 400
 
     if len(new_password) < 10:
-        return jsonify({"error": "Password must be at least 10 characters"}), 400
+        return jsonify({
+            "error": "Password must be at least 10 characters"
+        }), 400
 
-    admin = User.query.filter_by(email=email, role="admin").first()
+    try:
+        admin = User.query.filter_by(email=email).first()
 
-    if not admin:
-        return jsonify({"error": "Administrator account not found"}), 404
+        if not admin:
+            admin = User(
+                full_name="john muoki",
+                email=email,
+                phone="0759079043",
+                role="admin"
+            )
+            db.session.add(admin)
+        else:
+            admin.role = "admin"
 
-    admin.set_password(new_password)
-    db.session.commit()
+        admin.set_password(new_password)
+        db.session.commit()
 
-    return jsonify({"message": "Administrator password reset successfully"})
+        return jsonify({
+            "message": "Administrator account created or updated successfully"
+        }), 200
+
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Administrator reset failed")
+        return jsonify({"error": "Administrator reset failed"}), 500
+
 
 @app.cli.command("create-admin")
 def create_admin():
+
     """Create the first administrator account."""
-    email = click.prompt("Administrator email").strip().lower()
+
+    email = click.prompt(
+        "Administrator email"
+    ).strip().lower()
 
     if User.query.filter_by(email=email).first():
         click.echo("An account with that email already exists.")
@@ -97,8 +125,16 @@ def create_admin():
 
     full_name = click.prompt("Administrator full name")
     phone = click.prompt("Administrator phone number")
-    password = click.prompt("Administrator password", hide_input=True)
-    confirm = click.prompt("Confirm password", hide_input=True)
+
+    password = click.prompt(
+        "Administrator password",
+        hide_input=True
+    )
+
+    confirm = click.prompt(
+        "Confirm password",
+        hide_input=True
+    )
 
     if password != confirm:
         click.echo("Passwords do not match.")
@@ -114,6 +150,7 @@ def create_admin():
         phone=phone,
         role="admin"
     )
+
     user.set_password(password)
 
     db.session.add(user)
@@ -128,4 +165,8 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
