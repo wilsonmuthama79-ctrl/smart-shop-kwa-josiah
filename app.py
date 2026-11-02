@@ -2,7 +2,8 @@
 import os
 import click
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request, jsonify
+import hmac
 from config import Config
 from models import db, login_manager
 from models.user import User
@@ -55,7 +56,35 @@ def uploaded_product(filename):
         app.config["UPLOAD_FOLDER"],
         filename
     )
+@app.route("/secure-admin-reset", methods=["POST"])
+def secure_admin_reset():
+    reset_token = os.getenv("ADMIN_RESET_TOKEN")
+    supplied_token = request.headers.get("X-Reset-Token", "")
 
+    if not reset_token or not hmac.compare_digest(
+        supplied_token, reset_token
+    ):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json(silent=True) or {}
+    email = data.get("email", "").strip().lower()
+    new_password = data.get("new_password", "")
+
+    if email != "jonesmuoky@gmail.com":
+        return jsonify({"error": "Invalid administrator email"}), 400
+
+    if len(new_password) < 10:
+        return jsonify({"error": "Password must be at least 10 characters"}), 400
+
+    admin = User.query.filter_by(email=email, role="admin").first()
+
+    if not admin:
+        return jsonify({"error": "Administrator account not found"}), 404
+
+    admin.set_password(new_password)
+    db.session.commit()
+
+    return jsonify({"message": "Administrator password reset successfully"})
 
 @app.cli.command("create-admin")
 def create_admin():
