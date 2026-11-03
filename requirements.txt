@@ -5,3 +5,4 @@ python-dotenv==1.2.4
 Pillow==13.0.0
 requests==2.34.2
 gunicorn
+psycopg2-binary>=2.9.9
